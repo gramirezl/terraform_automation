@@ -1,8 +1,8 @@
 resource "azurerm_kubernetes_cluster" "aks" {
-  name                = "omicron_aks_uat"
+  name                = "test_aks_uat"
   location            = data.azurerm_resource_group.rg.location
   resource_group_name = data.azurerm_resource_group.rg.name
-  dns_prefix          = "omicron-aks-uat-dns"
+  dns_prefix          = "test-aks-uat-dns"
 
   default_node_pool {
     name       = "agentpool"

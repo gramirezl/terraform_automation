@@ -1,5 +1,5 @@
 resource "azurerm_app_service_plan" "serviceplan" {
-  name                = "asp_omicron_uat"
+  name                = "asp_test_uat"
   location            = data.azurerm_resource_group.rg.location
   resource_group_name = data.azurerm_resource_group.rg.name
   kind                = "Linux"
@@ -12,7 +12,7 @@ resource "azurerm_app_service_plan" "serviceplan" {
 }
 
 resource "azurerm_app_service" "appservice" {
-  name                    = "omicronlabuat"
+  name                    = "testlabuat"
   location                = data.azurerm_resource_group.rg.location
   resource_group_name     = data.azurerm_resource_group.rg.name
   app_service_plan_id     = azurerm_app_service_plan.serviceplan.id
@@ -21,8 +21,8 @@ resource "azurerm_app_service" "appservice" {
 
   app_settings = {
     WEBSITES_ENABLE_APP_SERVICE_STORAGE = false
-    DOCKER_REGISTRY_SERVER_URL          = "https://omicron.azurecr.io"
-    DOCKER_REGISTRY_SERVER_USERNAME     = "omicron"
+    DOCKER_REGISTRY_SERVER_URL          = "https://test.azurecr.io"
+    DOCKER_REGISTRY_SERVER_USERNAME     = "test"
     DOCKER_REGISTRY_SERVER_PASSWORD     = "pj1xWUqCOqMCbCBygJ+gMu4V3M3gfIvR"
   }
 

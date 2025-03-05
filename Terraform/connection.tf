@@ -1,5 +1,5 @@
 resource "azurerm_local_network_gateway" "localgateway" {
-  name                = "omicron-local-gateway-uat"
+  name                = "test-local-gateway-uat"
   resource_group_name = data.azurerm_resource_group.rg.name
   location            = data.azurerm_resource_group.rg.location
   gateway_fqdn        = "monterrey-nrzhqvhnqh.dynamic-m.com"
@@ -7,7 +7,7 @@ resource "azurerm_local_network_gateway" "localgateway" {
 }
 
 resource "azurerm_public_ip" "gpublicip" {
-  name                = "omicron-gateway-ip-uat"
+  name                = "test-gateway-ip-uat"
   location            = data.azurerm_resource_group.rg.location
   resource_group_name = data.azurerm_resource_group.rg.name
   allocation_method   = "Dynamic"
@@ -15,7 +15,7 @@ resource "azurerm_public_ip" "gpublicip" {
 }
 
 resource "azurerm_virtual_network_gateway" "vnetgateway" {
-  name                = "omicron-uat-gateway"
+  name                = "test-uat-gateway"
   location            = data.azurerm_resource_group.rg.location
   resource_group_name = data.azurerm_resource_group.rg.name
 
@@ -34,7 +34,7 @@ resource "azurerm_virtual_network_gateway" "vnetgateway" {
 }
 
 resource "azurerm_virtual_network_gateway_connection" "vngc" {
-  name                = "omicron-S2S-uat"
+  name                = "test-S2S-uat"
   location            = data.azurerm_resource_group.rg.location
   resource_group_name = data.azurerm_resource_group.rg.name
 
@@ -43,5 +43,5 @@ resource "azurerm_virtual_network_gateway_connection" "vngc" {
   virtual_network_gateway_id = azurerm_virtual_network_gateway.vnetgateway.id
   local_network_gateway_id   = azurerm_local_network_gateway.localgateway.id
 
-  shared_key = "Omicronlab.123"
+  shared_key = "testlab.123"
 }

@@ -1,5 +1,5 @@
 resource "azurerm_postgresql_server" "postgresserver" {
-  name                = "omicronuat"
+  name                = "testuat"
   location            = data.azurerm_resource_group.rg.location
   resource_group_name = data.azurerm_resource_group.rg.name
 
@@ -10,14 +10,14 @@ resource "azurerm_postgresql_server" "postgresserver" {
   geo_redundant_backup_enabled = false
   auto_grow_enabled            = true
 
-  administrator_login          = "omicronadmin"
+  administrator_login          = "testadmin"
   administrator_login_password = "H@Sh1CoR3!"
   version                      = "11"
   ssl_enforcement_enabled      = false
 }
 
 resource "azurerm_postgresql_database" "postgresdb" {
-  name                = "omicron_uat"
+  name                = "test_uat"
   resource_group_name = data.azurerm_resource_group.rg.name
   server_name         = azurerm_postgresql_server.postgresserver.name
   charset             = "UTF8"
@@ -25,7 +25,7 @@ resource "azurerm_postgresql_database" "postgresdb" {
 }
 
 resource "azurerm_postgresql_database" "postgresdbbi" {
-  name                = "omicron_uat_bi"
+  name                = "test_uat_bi"
   resource_group_name = data.azurerm_resource_group.rg.name
   server_name         = azurerm_postgresql_server.postgresserver.name
   charset             = "UTF8"
