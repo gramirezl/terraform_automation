@@ -1,0 +1,82 @@
+name: Ejecucion CD-Dev
+on:
+  push:
+#Dependiendo del ambiente al que se quiera impactar es la rama que se pondra, en caso de ser necesario se puede agregar algun path
+    branches:
+      - develops
+#Se puede agregar que se pueda ejecutar manualmente
+  workflow_dispatch:
+    inputs:
+      cloud_organization:
+        required: true
+        type: string
+      tf_workspace:
+        required: true
+        type: string
+      config_directory:
+        required: true
+        type: string
+
+# Se pueden agregar variables de ambiente para reutilizarlas en los pasos
+env:
+  TF_CLOUD_ORGANIZATION: "${{ inputs.cloud_organization }}"
+  TF_API_TOKEN: "${{ secrets.tf_api_token }}"
+  TF_WORKSPACE: "${{ inputs.tf_workspace }}"
+  CONFIG_DIRECTORY: "${{ inputs.config_directory}}"
+
+jobs:
+# Se genera el plan una vez mas para dejar una versión final de lo que se va a aplicar
+# Se genera el apply sin necesidad de preguntar si se quiere aplicar
+  terraform:
+    name: "Terraform Plan and Apply"
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Upload Configuration
+        uses: hashicorp/tfc-workflows-github/actions/upload-configuration@v1.0.0
+        id: plan-upload
+        with:
+          workspace: ${{ env.TF_WORKSPACE }}
+          directory: ${{ env.CONFIG_DIRECTORY }}
+          speculative: true      
+
+      - name: Create Plan Run
+        uses: hashicorp/tfc-workflows-github/actions/create-run@v1.0.0
+        id: plan-run
+        with:
+          workspace: ${{ env.TF_WORKSPACE }}
+          configuration_version: ${{ steps.plan-upload.outputs.configuration_version_id }}
+          plan_only: true
+
+      - name: Get Plan Output
+        uses: hashicorp/tfc-workflows-github/actions/plan-output@v1.0.0
+        id: plan-output
+        with:
+          plan: ${{ fromJSON(steps.plan-run.outputs.payload).data.relationships.plan.data.id }}
+
+      - name: Upload Configuration
+        uses: hashicorp/tfc-workflows-github/actions/upload-configuration@v1.0.0
+        id: apply-upload
+        with:
+          workspace: ${{ env.TF_WORKSPACE }}
+          directory: ${{ env.CONFIG_DIRECTORY }}
+
+      - name: Create Apply Run
+        uses: hashicorp/tfc-workflows-github/actions/create-run@v1.0.0
+        id: apply-run
+        with:
+          workspace: ${{ env.TF_WORKSPACE }}
+          configuration_version: ${{ steps.apply-upload.outputs.configuration_version_id }}
+  
+      - name: Apply
+        uses: hashicorp/tfc-workflows-github/actions/apply-run@v1.0.0
+        if: fromJSON(steps.apply-run.outputs.payload).data.attributes.actions.IsConfirmable
+        id: apply
+        with:
+          run: ${{ steps.apply-run.outputs.run_id }}
+          comment: "Apply Run from GitHub Actions CI ${{ github.sha }}"
+
