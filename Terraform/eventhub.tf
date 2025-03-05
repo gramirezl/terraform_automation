@@ -8,8 +8,6 @@ resource "azurerm_eventhub_namespace" "evenhubnsp" {
 
 resource "azurerm_eventhub" "insertlogstopic" {
   name                = "insertlogs"
-  namespace_name      = azurerm_eventhub_namespace.evenhubnsp.name
-  resource_group_name = data.azurerm_resource_group.rg.name
   partition_count     = 2
   message_retention   = 1
 }
